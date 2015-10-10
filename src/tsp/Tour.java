@@ -7,11 +7,13 @@ package tsp;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Queue;
+import java.util.Stack;
 
 public class Tour{
 
     // Holds our tour of cities
-    private ArrayList tour = new ArrayList<City>();
+    private ArrayList<City> tour = new ArrayList<City>();
     // Cache
     private double fitness = 0;
     private int distance = 0;
@@ -82,6 +84,17 @@ public class Tour{
             distance = tourDistance;
         }
         return distance;
+    }
+
+    //Swaps a section of the tour
+    public void swapSubTour(int position, int length){
+        City holder;
+        for (int i = 0;i< length/2;i++){
+            //Save the right hand city
+            holder = tour.get(position + length - i - 1);
+            tour.set(position+length -i - 1,tour.get(position+i));
+            tour.set(position+i,holder);
+        }
     }
 
     // Get number of cities on our tour

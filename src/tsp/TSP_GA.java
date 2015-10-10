@@ -35,7 +35,11 @@ public class TSP_GA {
 
         // Evolve population for 100 generations
         pop = GA.evolvePopulation(pop);
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 1000; i++) {
+            if (i % 1000 == 0) {
+                System.out.println("Generation " + Integer.toString(i));
+                GA.linKernighan(pop.getFittest());
+            }
             pop = GA.evolvePopulation(pop);
         }
 

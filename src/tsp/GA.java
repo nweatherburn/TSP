@@ -44,6 +44,16 @@ public class GA {
         return newPopulation;
     }
 
+    public static void linKernighan(Tour tour){
+        int subTourlength = 4;
+        System.out.println("Normal Tour:");
+        System.out.println(tour);
+        tour.swapSubTour(0,subTourlength);
+        System.out.println("Swapped Tour:");
+        System.out.println(tour);
+        tour.swapSubTour(0,subTourlength);
+    }
+
     // Applies crossover to a set of parents and creates offspring
     public static Tour crossover(Tour parent1, Tour parent2) {
         // Create new child tour
