@@ -11,10 +11,23 @@ import java.util.Set;
  */
 public class DeepSearch implements Search {
 
-    private static final int NUMBER_OF_MUTATIONS = 5;
+    private static final int NUMBER_OF_MUTATIONS = 3;
+    private static final int SEARCH_DEPTH = 4;
+
+    /*
+     *
+     * Depth      Number of Nodes
+     *   4                1
+     *   3                3
+     *   2                9
+     *   1                27
+     *   0                81
+     *
+     *   Total:           121
+     */
 
     public Tour performLocalSearch(final Tour originalTour, Mutator mutator) {
-        return deepMutation(originalTour, mutator, 3);
+        return deepMutation(originalTour, mutator, SEARCH_DEPTH);
     }
 
     public Tour deepMutation(final Tour originalTour, Mutator mutator, int depth) {
@@ -28,6 +41,7 @@ public class DeepSearch implements Search {
             if (depth > 0) {
                 tour = deepMutation(tour, mutator, depth - 1);
             }
+
             tours.add(tour);
         }
 

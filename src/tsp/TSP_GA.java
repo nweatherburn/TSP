@@ -8,6 +8,7 @@ package tsp;
 import tsp.mutator.LinKernighanMutator;
 import tsp.mutator.Mutator;
 import tsp.mutator.RandomMutator;
+import tsp.mutator.SwapMutator;
 import tsp.search.*;
 
 import java.io.File;
@@ -36,14 +37,14 @@ public class TSP_GA {
         }
 
         // Initialize population
-        final int generations = 1000;
+        final int generations = 500;
         final int populationSize = 50;
 
         Population pop = new Population(populationSize, true);
         System.out.println("Initial distance: " + pop.getFittest().getDistance());
         System.out.println("Optimal tour distance: " + 9352);
 
-        Mutator[] mutators = { new LinKernighanMutator(), new RandomMutator()};
+        Mutator[] mutators = { new SwapMutator(), new LinKernighanMutator(), new RandomMutator()};
         Search[] searches = { new FirstImprovementSearch(), new FirstChangeSearch(), new BestImprovementSearch(), new DeepSearch()};
 
         for (Mutator mutator : mutators) {
@@ -68,7 +69,5 @@ public class TSP_GA {
         // Print final results
         System.out.println(search.getClass().getSimpleName() + " distance: " + pop.getFittest().getDistance());
         System.out.println(search.getClass().getSimpleName() + " running time: " + (endTime - startTime) + "ms");
-//        System.out.println("Solution:");
-//        System.out.println(pop.getFittest());
     }
 }
