@@ -41,6 +41,7 @@ public class TSP_GA {
 
         Population pop = new Population(populationSize, true);
         System.out.println("Initial distance: " + pop.getFittest().getDistance());
+        System.out.println("Optimal tour distance: " + 9352);
 
         Mutator[] mutators = { new LinKernighanMutator(), new RandomMutator()};
         Search[] searches = { new FirstImprovementSearch(), new FirstChangeSearch(), new BestImprovementSearch(), new DeepSearch()};
