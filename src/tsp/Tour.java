@@ -7,8 +7,6 @@ package tsp;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Queue;
-import java.util.Stack;
 
 public class Tour{
 
@@ -25,8 +23,12 @@ public class Tour{
         }
     }
 
-    public Tour(ArrayList tour){
-        this.tour = tour;
+    public Tour(ArrayList<City> tour) {
+        this.tour = (ArrayList<City>) tour.clone();
+    }
+
+    public ArrayList<City> getTour() {
+        return tour;
     }
 
     // Creates a random individual
@@ -41,12 +43,17 @@ public class Tour{
 
     // Gets a city from the tour
     public City getCity(int tourPosition) {
-        return (City)tour.get(tourPosition);
+        return (City) tour.get(tourPosition);
     }
 
     // Sets a city in a certain position within a tour
     public void setCity(int tourPosition, City city) {
         tour.set(tourPosition, city);
+
+        resetFitness();
+    }
+
+    private void resetFitness() {
         // If the tours been altered we need to reset the fitness and distance
         fitness = 0;
         distance = 0;
@@ -61,7 +68,7 @@ public class Tour{
     }
 
     // Gets the total distance of the tour
-    public int getDistance(){
+    public int getDistance() {
         if (distance == 0) {
             int tourDistance = 0;
             // Loop through our tour's cities
@@ -70,7 +77,7 @@ public class Tour{
                 City fromCity = getCity(cityIndex);
                 // City we're travelling to
                 City destinationCity;
-                // Check we're not on our tour's last city, if we are set our 
+                // Check we're not on our tour's last city, if we are set our
                 // tour's final destination city to our starting city
                 if(cityIndex+1 < tourSize()){
                     destinationCity = getCity(cityIndex+1);
@@ -83,18 +90,8 @@ public class Tour{
             }
             distance = tourDistance;
         }
-        return distance;
-    }
 
-    //Swaps a section of the tour
-    public void swapSubTour(int position, int length){
-        City holder;
-        for (int i = 0;i< length/2;i++){
-            //Save the right hand city
-            holder = tour.get(position + length - i - 1);
-            tour.set(position+length -i - 1,tour.get(position+i));
-            tour.set(position+i,holder);
-        }
+        return distance;
     }
 
     // Get number of cities on our tour
@@ -111,7 +108,7 @@ public class Tour{
     public String toString() {
         String geneString = "|";
         for (int i = 0; i < tourSize(); i++) {
-            geneString += getCity(i)+"|";
+            geneString += getCity(i) + "|";
         }
         return geneString;
     }

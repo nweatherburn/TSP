@@ -34,6 +34,10 @@ public class Population {
         return tours[index];
     }
 
+    public void setTour(int index, Tour tour) {
+        tours[index] = tour;
+    }
+
     // Gets the best tour in the population
     public Tour getFittest() {
         Tour fittest = tours[0];

@@ -5,7 +5,13 @@
 
 package tsp;
 
+import tsp.mutator.LinKernighanMutator;
+import tsp.mutator.Mutator;
+import tsp.mutator.RandomMutator;
+import tsp.search.*;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class TSP_GA {
@@ -30,23 +36,38 @@ public class TSP_GA {
         }
 
         // Initialize population
-        Population pop = new Population(50, true);
+        final int generations = 1000;
+        final int populationSize = 50;
+
+        Population pop = new Population(populationSize, true);
         System.out.println("Initial distance: " + pop.getFittest().getDistance());
 
-        // Evolve population for 100 generations
-        pop = GA.evolvePopulation(pop);
-        for (int i = 0; i < 1000; i++) {
-            if (i % 1000 == 0) {
-                System.out.println("Generation " + Integer.toString(i));
-                GA.linKernighan(pop.getFittest());
+        Mutator[] mutators = { new LinKernighanMutator(), new RandomMutator()};
+        Search[] searches = { new FirstImprovementSearch(), new FirstChangeSearch(), new BestImprovementSearch(), new DeepSearch()};
+
+        for (Mutator mutator : mutators) {
+            System.out.println();
+            System.out.println(mutator.getClass().getSimpleName());
+            for (Search search : searches) {
+                evolvePopulation(pop, search, mutator, generations);
             }
-            pop = GA.evolvePopulation(pop);
         }
 
-        // Print final results
+        System.out.println();
         System.out.println("Finished");
-        System.out.println("Final distance: " + pop.getFittest().getDistance());
-        System.out.println("Solution:");
-        System.out.println(pop.getFittest());
+    }
+    private static void evolvePopulation(Population pop, Search search, Mutator mutator, int generations) {
+
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < generations; i++) {
+            pop = GA.evolvePopulation(pop, search, mutator);
+        }
+        long endTime = System.currentTimeMillis();
+
+        // Print final results
+        System.out.println(search.getClass().getSimpleName() + " distance: " + pop.getFittest().getDistance());
+        System.out.println(search.getClass().getSimpleName() + " running time: " + (endTime - startTime) + "ms");
+//        System.out.println("Solution:");
+//        System.out.println(pop.getFittest());
     }
 }

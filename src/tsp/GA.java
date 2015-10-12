@@ -5,15 +5,17 @@
 
 package tsp;
 
+import tsp.mutator.Mutator;
+import tsp.search.Search;
+
 public class GA {
 
     /* GA parameters */
-    private static final double mutationRate = 0.015;
     private static final int tournamentSize = 5;
     private static final boolean elitism = true;
 
     // Evolves a population over one generation
-    public static Population evolvePopulation(Population pop) {
+    public static Population evolvePopulation(Population pop, Search search, Mutator mutator) {
         Population newPopulation = new Population(pop.populationSize(), false);
 
         // Keep our best individual if elitism is enabled
@@ -38,20 +40,10 @@ public class GA {
 
         // Mutate the new population a bit to add some new genetic material
         for (int i = elitismOffset; i < newPopulation.populationSize(); i++) {
-            mutate(newPopulation.getTour(i));
+            newPopulation.setTour(i, search.performLocalSearch(newPopulation.getTour(i), mutator));
         }
 
         return newPopulation;
-    }
-
-    public static void linKernighan(Tour tour){
-        int subTourlength = 4;
-        System.out.println("Normal Tour:");
-        System.out.println(tour);
-        tour.swapSubTour(0,subTourlength);
-        System.out.println("Swapped Tour:");
-        System.out.println(tour);
-        tour.swapSubTour(0,subTourlength);
     }
 
     // Applies crossover to a set of parents and creates offspring
@@ -91,26 +83,6 @@ public class GA {
             }
         }
         return child;
-    }
-
-    // Mutate a tour using swap mutation
-    private static void mutate(Tour tour) {
-        // Loop through tour cities
-        for(int tourPos1=0; tourPos1 < tour.tourSize(); tourPos1++){
-            // Apply mutation rate
-            if(Math.random() < mutationRate){
-                // Get a second random position in the tour
-                int tourPos2 = (int) (tour.tourSize() * Math.random());
-
-                // Get the cities at target position in tour
-                City city1 = tour.getCity(tourPos1);
-                City city2 = tour.getCity(tourPos2);
-
-                // Swap them around
-                tour.setCity(tourPos2, city1);
-                tour.setCity(tourPos1, city2);
-            }
-        }
     }
 
     // Selects candidate tour for crossover
