@@ -37,28 +37,48 @@ public class TSP_GA {
         }
 
         // Initialize population
-        final int generations = 500;
+        final int generations = 1000;
         final int populationSize = 50;
 
         Population pop = new Population(populationSize, true);
         System.out.println("Initial distance: " + pop.getFittest().getDistance());
         System.out.println("Optimal tour distance: " + 9352);
 
-        Mutator[] mutators = { new SwapMutator(), new LinKernighanMutator(), new RandomMutator()};
+
+//        compareSearchMethods(pop, generations);
+        compareSubtourLength(pop, generations);
+
+        System.out.println();
+        System.out.println("Finished");
+    }
+
+    private static void compareSearchMethods(Population population, int generations) {
+        Mutator[] mutators = { new LinKernighanMutator(), new RandomMutator()};
         Search[] searches = { new FirstImprovementSearch(), new FirstChangeSearch(), new BestImprovementSearch(), new DeepSearch()};
 
         for (Mutator mutator : mutators) {
             System.out.println();
             System.out.println(mutator.getClass().getSimpleName());
             for (Search search : searches) {
-                evolvePopulation(pop, search, mutator, generations);
+                evolvePopulation(population, search, mutator, generations);
             }
         }
-
-        System.out.println();
-        System.out.println("Finished");
     }
-    private static void evolvePopulation(Population pop, Search search, Mutator mutator, int generations) {
+
+    private static void compareSubtourLength(Population population, int generations) {
+        LinKernighanMutator mutator = new LinKernighanMutator();
+        Search firstImprovementSearch = new FirstImprovementSearch();
+        Search bestImprovementSearch = new BestImprovementSearch();
+
+        for (int subtourLength = 1; subtourLength <= 2; subtourLength += 1) {
+            mutator.setSubtourLength(subtourLength);
+            int firstImprovementDistance = evolvePopulation(population, firstImprovementSearch, mutator, generations);
+            int bestImprovementDistance = evolvePopulation(population, bestImprovementSearch, mutator, generations);
+            System.out.println(subtourLength + "\t" + firstImprovementDistance + "\t" + bestImprovementDistance);
+        }
+    }
+
+    private static int evolvePopulation(Population pop, Search search, Mutator mutator, int generations) {
 
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < generations; i++) {
@@ -66,8 +86,6 @@ public class TSP_GA {
         }
         long endTime = System.currentTimeMillis();
 
-        // Print final results
-        System.out.println(search.getClass().getSimpleName() + " distance: " + pop.getFittest().getDistance());
-        System.out.println(search.getClass().getSimpleName() + " running time: " + (endTime - startTime) + "ms");
+        return pop.getFittest().getDistance();
     }
 }

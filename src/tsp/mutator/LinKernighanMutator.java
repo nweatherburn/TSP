@@ -8,7 +8,7 @@ import tsp.Tour;
  */
 public class LinKernighanMutator implements Mutator {
 
-    private static final int SUBTOUR_LENGTH = 15;
+    private static int SUBTOUR_LENGTH = 4;
 
     public void mutate(Tour tour) {
         int position = (int) (Math.random() * (tour.tourSize() - SUBTOUR_LENGTH));
@@ -26,5 +26,9 @@ public class LinKernighanMutator implements Mutator {
             tour.setCity(position + length - i - 1, tour.getCity(position + i));
             tour.setCity(position + i, holder);
         }
+    }
+
+    public void setSubtourLength(int subtourLength) {
+        SUBTOUR_LENGTH = subtourLength;
     }
 }
