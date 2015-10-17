@@ -6,38 +6,39 @@
 package tsp;
 
 public class City {
-    int x;
-    int y;
+    private final double x;
+    private final double y;
 
     // Constructs a randomly placed city
     public City(){
-        this.x = (int)(Math.random()*200);
-        this.y = (int)(Math.random()*200);
+        this.x = Math.random() * 200;
+        this.y = Math.random() * 200;
     }
 
     // Constructs a city at chosen x, y location
-    public City(int x, int y){
+    public City(double x, double y){
         this.x = x;
         this.y = y;
     }
 
     // Gets city's x coordinate
-    public int getX(){
+    public double getX(){
         return this.x;
     }
 
     // Gets city's y coordinate
-    public int getY(){
+    public double getY(){
         return this.y;
     }
 
     // Gets the distance to given city
-    public double distanceTo(City city){
-        int xDistance = Math.abs(getX() - city.getX());
-        int yDistance = Math.abs(getY() - city.getY());
+    public double distanceTo(City city) {
+        double xDistance = Math.abs(getX() - city.getX());
+        double yDistance = Math.abs(getY() - city.getY());
+
         double distance = Math.sqrt( (xDistance*xDistance) + (yDistance*yDistance) );
 
-        return distance;
+        return Math.round(distance);
     }
 
     @Override
@@ -59,8 +60,8 @@ public class City {
 
     @Override
     public int hashCode() {
-        int result = x;
+        double result = x;
         result = 31 * result + y;
-        return result;
+        return (int) result;
     }
 }

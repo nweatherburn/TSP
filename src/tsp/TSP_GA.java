@@ -34,7 +34,7 @@ public class TSP_GA {
                 double yPoint = scan.nextDouble();
 
                 points.add(new DoublePoint(new double[] {xPoint, yPoint}));
-                City city = new City((int) xPoint, (int) yPoint);
+                City city = new City(xPoint, yPoint);
                 TourManager.addCity(city);
             }
 
@@ -90,10 +90,7 @@ public class TSP_GA {
     }
 
     private static void compareSearchMethods(Population population, int generations) {
-//        Mutator[] mutators = { new LinKernighanMutator(), new RandomMutator(), new SwapMutator()};
-//        Search[] searches = { new FirstImprovementSearch(), new FirstChangeSearch(), new BestImprovementSearch(), new DeepSearch()};
-
-        Mutator[] mutators = {new RandomMutator(), new SwapMutator()};
+        Mutator[] mutators = {new LinKernighanMutator(), new RandomMutator(), new SwapMutator()};
         Search[] searches = { new FirstImprovementSearch(), new FirstChangeSearch(), new BestImprovementSearch()};
 
         // This code currently prints out tabs in a format that can be pasted into Excel
@@ -140,16 +137,16 @@ public class TSP_GA {
 //        System.out.println(search.getClass().getSimpleName() + " distance: " + evolutionResult.distance);
 //        System.out.println(search.getClass().getSimpleName() + " running time: " + evolutionResult.runningTime + "ms");
 
-        Tour fittest = pop.getFittest();
-        for (int i = 0; i < fittest.tourSize(); i++) {
-            for (int j = i + 1; j < fittest.tourSize(); j++) {
-                if (fittest.getCity(i) == fittest.getCity(j)) {
-                    System.out.println("OOPS");
-                } else if (fittest.getCity(i).getX() == fittest.getCity(j).getX() && fittest.getCity(i).getY() == fittest.getCity(j).getY()) {
-                    System.out.println("AHA!");
-                }
-            }
-        }
+//        Tour fittest = pop.getFittest();
+//        for (int i = 0; i < fittest.tourSize(); i++) {
+//            for (int j = i + 1; j < fittest.tourSize(); j++) {
+//                if (fittest.getCity(i) == fittest.getCity(j)) {
+//                    System.out.println("OOPS");
+//                } else if (fittest.getCity(i).getX() == fittest.getCity(j).getX() && fittest.getCity(i).getY() == fittest.getCity(j).getY()) {
+//                    System.out.println("AHA!");
+//                }
+//            }
+//        }
 
         return evolutionResult;
     }
