@@ -90,14 +90,23 @@ public class TSP_GA {
     }
 
     private static void compareSearchMethods(Population population, int generations) {
-        Mutator[] mutators = { new LinKernighanMutator(), new RandomMutator(), new SwapMutator()};
-        Search[] searches = { new FirstImprovementSearch(), new FirstChangeSearch(), new BestImprovementSearch(), new DeepSearch()};
+//        Mutator[] mutators = { new LinKernighanMutator(), new RandomMutator(), new SwapMutator()};
+//        Search[] searches = { new FirstImprovementSearch(), new FirstChangeSearch(), new BestImprovementSearch(), new DeepSearch()};
+
+        Mutator[] mutators = {new RandomMutator(), new SwapMutator()};
+        Search[] searches = { new FirstImprovementSearch(), new FirstChangeSearch(), new BestImprovementSearch()};
+
+        // This code currently prints out tabs in a format that can be pasted into Excel
+        for (Search search: searches) {
+            System.out.print("\t" + search.getClass().getSimpleName());
+        }
 
         for (Mutator mutator : mutators) {
             System.out.println();
-            System.out.println(mutator.getClass().getSimpleName());
+            System.out.print(mutator.getClass().getSimpleName());
             for (Search search : searches) {
-                evolvePopulation(population, search, mutator, generations);
+                EvolutionResult evolutionResult = evolvePopulation(population, search, mutator, generations);
+                System.out.print("\t" + evolutionResult.distance);
             }
         }
     }
@@ -109,13 +118,13 @@ public class TSP_GA {
 
         for (int subtourLength = 1; subtourLength <= 2; subtourLength += 1) {
             mutator.setSubtourLength(subtourLength);
-            int firstImprovementDistance = evolvePopulation(population, firstImprovementSearch, mutator, generations);
-            int bestImprovementDistance = evolvePopulation(population, bestImprovementSearch, mutator, generations);
+            int firstImprovementDistance = evolvePopulation(population, firstImprovementSearch, mutator, generations).distance;
+            int bestImprovementDistance = evolvePopulation(population, bestImprovementSearch, mutator, generations).distance;
             System.out.println(subtourLength + "\t" + firstImprovementDistance + "\t" + bestImprovementDistance);
         }
     }
 
-    private static int evolvePopulation(Population pop, Search search, Mutator mutator, int generations) {
+    private static EvolutionResult evolvePopulation(Population pop, Search search, Mutator mutator, int generations) {
 
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < generations; i++) {
@@ -123,18 +132,35 @@ public class TSP_GA {
         }
         long endTime = System.currentTimeMillis();
 
-        System.out.println(search.getClass().getSimpleName() + " distance: " + pop.getFittest().getDistance());
-        System.out.println(search.getClass().getSimpleName() + " running time: " + (endTime - startTime) + "ms");
+        EvolutionResult evolutionResult = new EvolutionResult(pop.getFittest().getDistance(), endTime - startTime);
+
+//        System.out.println();
+//        System.out.println(pop.getFittest());
+
+//        System.out.println(search.getClass().getSimpleName() + " distance: " + evolutionResult.distance);
+//        System.out.println(search.getClass().getSimpleName() + " running time: " + evolutionResult.runningTime + "ms");
 
         Tour fittest = pop.getFittest();
         for (int i = 0; i < fittest.tourSize(); i++) {
             for (int j = i + 1; j < fittest.tourSize(); j++) {
                 if (fittest.getCity(i) == fittest.getCity(j)) {
                     System.out.println("OOPS");
+                } else if (fittest.getCity(i).getX() == fittest.getCity(j).getX() && fittest.getCity(i).getY() == fittest.getCity(j).getY()) {
+                    System.out.println("AHA!");
                 }
             }
         }
 
-        return pop.getFittest().getDistance();
+        return evolutionResult;
+    }
+
+    private static class EvolutionResult {
+        int distance;
+        long runningTime;
+
+        public EvolutionResult(int distance, long runningTime) {
+            this.distance = distance;
+            this.runningTime = runningTime;
+        }
     }
 }
