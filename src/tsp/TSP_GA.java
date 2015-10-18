@@ -48,8 +48,8 @@ public class TSP_GA {
         }
 
         // Initialize population
-        final int populationSize = 50;
-        final int generations = 50;
+        final int populationSize = 500;
+        final int generations = 1000;
         final int repetitions = 5;
 
 //        Population pop = new Population(populationSize, true);
