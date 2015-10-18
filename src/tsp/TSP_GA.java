@@ -48,37 +48,43 @@ public class TSP_GA {
         }
 
         // Initialize population
-        final int populationSize = 1000;
-        final int generations = 100;
+        final int populationSize = 50;
+        final int generations = 50;
+        final int repetitions = 5;
 
 //        Population pop = new Population(populationSize, true);
         final Population pop = createInitialPopulation(points, populationSize);
         System.out.println("Initial distance: " + pop.getFittest().getDistance());
         System.out.println("Optimal tour distance: " + 9352);
 
-//        new Thread() {
-//            public void run() {
-//                getAverageForMutator(pop, new LinKernighanMutator(), LIN_KERNIGHAN_BY_GENERATION, generations);
-//                System.out.println("LinK Done");
-//            }
-//        }.start();
-//
-        new Thread() {
-            public void run() {
-                getAverageForMutator(pop, new RandomMutator(), RANDOM_BY_GENERATION, generations);
-                System.out.println("Random Done");
-            }
-        }.start();
-//
-//        new Thread() {
-//            public void run() {
-//                getAverageForMutator(pop, new SwapMutator(), SWAP_BY_GENERATION, generations);
-//                System.out.println("Swap Done");
-//            }
-//        }.start();
+        runTest(pop, new BestImprovementSearch(), repetitions, generations);
 
         System.out.println();
         System.out.println("Finished");
+    }
+
+    /**
+     * Run N repetitions of a particular search technique. Uses a RandomMutator.
+     * It expects a directory named "data/{SearchTechniqueClassName}/" to exist
+     *
+     * @param pop
+     * @param search
+     * @param repetitions
+     * @param generations
+     */
+    private static void runTest(final Population pop, final Search search, final int repetitions, final int generations) {
+        for (int i = 0; i < repetitions; i += 1) {
+            final int runNumber = i;
+            new Thread() {
+                public void run() {
+                    String filename = "data/" +
+                            search.getClass().getSimpleName() +
+                            "/P" + pop.populationSize() + "_G" + generations + "_" + runNumber + ".csv";
+                    testOneSearchTechnique(pop, search, filename, generations);
+                    System.out.println(filename + " done");
+                }
+            }.start();
+        }
     }
 
     private static Population createInitialPopulation(Set<DoublePoint> points, int populationSize) {
@@ -111,34 +117,24 @@ public class TSP_GA {
         return population;
     }
 
-    private static void getAverageForMutator(final Population population, Mutator mutator, String filename, int generations) {
-        Search[] searches = { new FirstImprovementSearch(), new FirstChangeSearch(), new BestImprovementSearch(), new DeepSearch()};
-        Population[] populations = new Population[searches.length];
-        for (int i = 0; i < populations.length; i++) {
-            populations[i] = population.duplicate();
-        }
+    private static void testOneSearchTechnique(final Population population, Search search, String filename, int generations) {
+        Mutator mutator = new RandomMutator();
 
         try {
             PrintWriter pw = new PrintWriter(new File(filename));
-            for (Search search : searches) {
-                pw.print(",");
-                pw.print(search.getClass().getSimpleName());
-            }
+            pw.print(",");
+            pw.print(search.getClass().getSimpleName());
             pw.println();
 
             pw.print("0");
-            for (int i = 0; i < populations.length; i++) {
-                pw.print("," + populations[i].getFittest().getDistance());
-            }
+            pw.print("," + population.getFittest().getDistance());
             pw.println();
 
             for (int i = 1; i <= generations; i++) {
                 pw.print(i);
 
-                for (int j = 0; j< populations.length; j++) {
-                    populations[j] = GA.evolvePopulation(populations[j], searches[j], mutator);
-                    pw.print("," + populations[j].getFittest().getDistance());
-                }
+                Population evolved = GA.evolvePopulation(population, search, mutator);
+                pw.print("," + evolved.getFittest().getDistance());
                 pw.println();
             }
 
