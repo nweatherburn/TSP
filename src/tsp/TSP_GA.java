@@ -15,11 +15,16 @@ import tsp.mutator.SwapMutator;
 import tsp.search.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class TSP_GA {
 
     public static String QATAR_DATA = "data/qatar.txt";
+    public static String LIN_KERNIGHAN_BY_GENERATION = "data/LINK_500_1000.csv";
+    public static String RANDOM_BY_GENERATION = "data/RANDOM_1000_1000.csv";
+    public static String SWAP_BY_GENERATION =  "data/SWAP_500_100.csv";
 
     public static void main(String[] args) {
 
@@ -43,17 +48,34 @@ public class TSP_GA {
         }
 
         // Initialize population
+        final int populationSize = 1000;
         final int generations = 100;
-        final int populationSize = 50;
 
 //        Population pop = new Population(populationSize, true);
-        Population pop = createInitialPopulation(points, populationSize);
+        final Population pop = createInitialPopulation(points, populationSize);
         System.out.println("Initial distance: " + pop.getFittest().getDistance());
         System.out.println("Optimal tour distance: " + 9352);
 
-
-        compareSearchMethods(pop, generations);
-//        compareSubtourLength(pop, generations);
+//        new Thread() {
+//            public void run() {
+//                getAverageForMutator(pop, new LinKernighanMutator(), LIN_KERNIGHAN_BY_GENERATION, generations);
+//                System.out.println("LinK Done");
+//            }
+//        }.start();
+//
+        new Thread() {
+            public void run() {
+                getAverageForMutator(pop, new RandomMutator(), RANDOM_BY_GENERATION, generations);
+                System.out.println("Random Done");
+            }
+        }.start();
+//
+//        new Thread() {
+//            public void run() {
+//                getAverageForMutator(pop, new SwapMutator(), SWAP_BY_GENERATION, generations);
+//                System.out.println("Swap Done");
+//            }
+//        }.start();
 
         System.out.println();
         System.out.println("Finished");
@@ -87,6 +109,43 @@ public class TSP_GA {
         }
 
         return population;
+    }
+
+    private static void getAverageForMutator(final Population population, Mutator mutator, String filename, int generations) {
+        Search[] searches = { new FirstImprovementSearch(), new FirstChangeSearch(), new BestImprovementSearch(), new DeepSearch()};
+        Population[] populations = new Population[searches.length];
+        for (int i = 0; i < populations.length; i++) {
+            populations[i] = population.duplicate();
+        }
+
+        try {
+            PrintWriter pw = new PrintWriter(new File(filename));
+            for (Search search : searches) {
+                pw.print(",");
+                pw.print(search.getClass().getSimpleName());
+            }
+            pw.println();
+
+            pw.print("0");
+            for (int i = 0; i < populations.length; i++) {
+                pw.print("," + populations[i].getFittest().getDistance());
+            }
+            pw.println();
+
+            for (int i = 1; i <= generations; i++) {
+                pw.print(i);
+
+                for (int j = 0; j< populations.length; j++) {
+                    populations[j] = GA.evolvePopulation(populations[j], searches[j], mutator);
+                    pw.print("," + populations[j].getFittest().getDistance());
+                }
+                pw.println();
+            }
+
+            pw.close();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     private static void compareSearchMethods(Population population, int generations) {

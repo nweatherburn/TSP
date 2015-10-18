@@ -27,6 +27,10 @@ public class Tour{
         this.tour = (ArrayList<City>) tour.clone();
     }
 
+    public Tour(Tour toCopy) {
+        this(toCopy.tour);
+    }
+
     public ArrayList<City> getTour() {
         return tour;
     }

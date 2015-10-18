@@ -54,4 +54,14 @@ public class Population {
     public int populationSize() {
         return tours.length;
     }
+
+    public Population duplicate() {
+        Population population = new Population(this.populationSize(), false);
+
+        for (int i = 0; i < this.populationSize(); i++) {
+            population.setTour(i, new Tour(this.tours[i]));
+        }
+
+        return population;
+    }
 }
