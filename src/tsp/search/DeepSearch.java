@@ -11,20 +11,13 @@ import java.util.Set;
  */
 public class DeepSearch implements Search {
 
-    private static final int NUMBER_OF_MUTATIONS = 3;
-    private static final int SEARCH_DEPTH = 4;
+    private final int NUMBER_OF_MUTATIONS;
+    private final int SEARCH_DEPTH;
 
-    /*
-     *
-     * Depth      Number of Nodes
-     *   4                1
-     *   3                3
-     *   2                9
-     *   1                27
-     *   0                81
-     *
-     *   Total:           121
-     */
+    public DeepSearch(int numMutations, int searchDepth) {
+        this.NUMBER_OF_MUTATIONS = numMutations;
+        this.SEARCH_DEPTH = searchDepth;
+    }
 
     public Tour performLocalSearch(final Tour originalTour, Mutator mutator) {
         return deepMutation(originalTour, mutator, SEARCH_DEPTH);

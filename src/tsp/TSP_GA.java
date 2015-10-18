@@ -22,9 +22,6 @@ import java.util.*;
 public class TSP_GA {
 
     public static String QATAR_DATA = "data/qatar.txt";
-    public static String LIN_KERNIGHAN_BY_GENERATION = "data/LINK_500_1000.csv";
-    public static String RANDOM_BY_GENERATION = "data/RANDOM_1000_1000.csv";
-    public static String SWAP_BY_GENERATION =  "data/SWAP_500_100.csv";
 
     public static void main(String[] args) {
 
@@ -48,19 +45,16 @@ public class TSP_GA {
         }
 
         // Initialize population
-        final int populationSize = 500;
+        final int populationSize = 250;
         final int generations = 1000;
-        final int repetitions = 5;
+        final int repetitions = 10;
 
 //        Population pop = new Population(populationSize, true);
         final Population pop = createInitialPopulation(points, populationSize);
         System.out.println("Initial distance: " + pop.getFittest().getDistance());
         System.out.println("Optimal tour distance: " + 9352);
 
-        runTest(pop, new BestImprovementSearch(), repetitions, generations);
-
-        System.out.println();
-        System.out.println("Finished");
+        runTest(pop, new DeepSearch(2, 5), repetitions, generations);
     }
 
     /**
@@ -73,7 +67,7 @@ public class TSP_GA {
      * @param generations
      */
     private static void runTest(final Population pop, final Search search, final int repetitions, final int generations) {
-        for (int i = 0; i < repetitions; i += 1) {
+        for (int i = 1; i <= repetitions; i++) {
             final int runNumber = i;
             new Thread() {
                 public void run() {
@@ -117,24 +111,20 @@ public class TSP_GA {
         return population;
     }
 
-    private static void testOneSearchTechnique(final Population population, Search search, String filename, int generations) {
+    private static void testOneSearchTechnique(Population population, Search search, String filename, int generations) {
         Mutator mutator = new RandomMutator();
 
         try {
             PrintWriter pw = new PrintWriter(new File(filename));
-            pw.print(",");
-            pw.print(search.getClass().getSimpleName());
-            pw.println();
 
-            pw.print("0");
-            pw.print("," + population.getFittest().getDistance());
-            pw.println();
+            pw.println("," + search.getClass().getSimpleName());
+            pw.println("0," + population.getFittest().getDistance());
 
             for (int i = 1; i <= generations; i++) {
                 pw.print(i);
 
-                Population evolved = GA.evolvePopulation(population, search, mutator);
-                pw.print("," + evolved.getFittest().getDistance());
+                population = GA.evolvePopulation(population, search, mutator);
+                pw.print("," + population.getFittest().getDistance());
                 pw.println();
             }
 
